@@ -1,0 +1,45 @@
+[
+   {
+      "name": "NIFTYNXT50",
+      "instrument_token": 270857,
+      "exchange_token": 1058,
+      "tradingsymbol": "NIFTY NEXT 50"
+   },
+   {
+    "instrument_token": 256265,
+    "exchange_token": 1001,
+    "tradingsymbol": "NIFTY 50",
+    "name": "NIFTY"
+   },
+   {
+    "instrument_token": 257801,
+    "exchange_token": 1007,
+    "tradingsymbol": "NIFTY FIN SERVICE",
+    "name": "FINNIFTY"
+   },
+   {
+    "instrument_token": 260105,
+    "exchange_token": 1016,
+    "tradingsymbol": "NIFTY BANK",
+    "name": "BANKNIFTY"
+   },
+   {
+    "instrument_token": 256777,
+    "exchange_token": 1003,
+    "tradingsymbol": "NIFTY MIDCAP 100",
+    "name": "MIDCPNIFTY"
+   },
+   {
+    "instrument_token": 265,
+    "exchange_token": 1,
+    "tradingsymbol": "SENSEX",
+    "name": "SENSEX"
+   },
+   {
+    "instrument_token": 274441,
+    "exchange_token": 1072,
+    "tradingsymbol": "BANKEX",
+    "name": "BANKEX"
+   }
+  
+]
