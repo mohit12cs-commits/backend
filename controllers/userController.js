@@ -1346,33 +1346,10 @@ module.exports = {
 
         //     current.quantity += trade.quantity;
         //   } else {
-        //     // portfolioMap[trade.instrument_id].position += trade.quantity;
-        //     // portfolioMap[trade.instrument_id].quantity -= trade.quantity;
-        //   }
-        // });
+    }),
 
-        // console.log(portfolioMap, "portfolioMap");
-        
-
-        // const portfolio = Object.values(portfolioMap);
-  
-        // return res.status(200).json(
-        //   new ApiResponse(
-        //       200, 
-        //       portfolio,
-        //       ""
-        //   )
-        // )
-      
-
-    }), 
-
-
-    // const user = await User.findById(req.user._id);
-    // if (!user) return res.status(404).json({ error: "User not found" });
-
-    const pipeline = await WalletTransaction.aggregate(
-      [
+    getWalletDetails: asyncHandler(async(req, res)=>{
+      const pipeline = await WalletTransaction.aggregate([
         {
           $match: {
             user: req.user._id
@@ -1400,30 +1377,24 @@ module.exports = {
             balance: { $subtract: ["$totalCredit", "$totalDebit"] }
           }
         }
-      ]
-    )
+      ])
 
-    console.log(pipeline, "pipeline");
+      const walletBalance = pipeline?.[0]?.balance || 0
+      const transactions = await WalletTransaction.findWithSort({ user: req.user._id }, 'createdAt', 'desc');
 
-    const walletBalance = pipeline?.[0]?.balance || 0
-
-    const transactions = await WalletTransaction.findWithSort({ user: req.user._id }, 'createdAt', 'desc');
-
-        return res.status(200).json(
-          new ApiResponse(
-              200, 
-              {
-                walletBalance,
-                transactions,
-              },
-              ""
-          )
+      return res.status(200).json(
+        new ApiResponse(
+          200, 
+          {
+            walletBalance,
+            transactions,
+          },
+          ""
         )
-
+      )
     }),
-    
-    getWalletDetailsForAdmin: asyncHandler(async(req, res)=>{
 
+    getWalletDetailsForAdmin: asyncHandler(async(req, res)=>{
       const {id} = req.params;
   
       const user = await User.findById(id);
