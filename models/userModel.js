@@ -70,6 +70,10 @@ class User {
     }
 
     static async findById(id) {
+        if (!id || typeof id !== 'string' || id.trim() === '') {
+            return null;
+        }
+        
         const doc = await User.getCollection().doc(id).get();
         if (!doc.exists) return null;
         return new User({ id: doc.id, ...doc.data() });

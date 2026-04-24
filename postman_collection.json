@@ -1,0 +1,711 @@
+{
+	"info": {
+		"_postman_id": "backend-api-collection",
+		"name": "Backend Trading API",
+		"description": "Complete API collection for trading backend application",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Create User (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/create/user",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "create", "user"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/user/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "user", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/user/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "user", "logout"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/user",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "user"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Market Data",
+			"item": [
+				{
+					"name": "Zerodha Admin Login",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/login/zeroda",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "login", "zeroda"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Full Market Quotes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/quote?instrument_token=256265",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "quote"],
+							"query": [
+								{
+									"key": "instrument_token",
+									"value": "256265"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Instruments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/search?q=RELIANCE",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "RELIANCE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "OHLC Data",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/ohlc?instrument_token=256265",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "ohlc"],
+							"query": [
+								{
+									"key": "instrument_token",
+									"value": "256265"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Historical Data",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/historical?instrument_token=256265&interval=day&from=2024-01-01&to=2024-01-31",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "historical"],
+							"query": [
+								{
+									"key": "instrument_token",
+									"value": "256265"
+								},
+								{
+									"key": "interval",
+									"value": "day"
+								},
+								{
+									"key": "from",
+									"value": "2024-01-01"
+								},
+								{
+									"key": "to",
+									"value": "2024-01-31"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Index Data",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/indexes?page=1&perPage=20&search=NIFTY",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "indexes"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "perPage",
+									"value": "20"
+								},
+								{
+									"key": "search",
+									"value": "NIFTY"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Option Data",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/option?symbol=NIFTY&expiry=2024-01-25",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "option"],
+							"query": [
+								{
+									"key": "symbol",
+									"value": "NIFTY"
+								},
+								{
+									"key": "expiry",
+									"value": "2024-01-25"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Market Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/market/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "market", "status"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Trading",
+			"item": [
+				{
+					"name": "Buy Share",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"instrument_token\": \"256265\",\n  \"quantity\": 10,\n  \"price\": 2500,\n  \"order_type\": \"LIMIT\",\n  \"buy_type\": \"regular\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/buy",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "buy"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sell Share",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"instrument_token\": \"256265\",\n  \"quantity\": 10,\n  \"price\": 2500,\n  \"order_type\": \"LIMIT\",\n  \"buy_type\": \"regular\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/sell",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "sell"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Portfolio",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/portfolio?type=holding",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "portfolio"],
+							"query": [
+								{
+									"key": "type",
+									"value": "holding"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Wallet Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/wallet",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "wallet"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order Management",
+			"item": [
+				{
+					"name": "Cancel Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/order/cancel/{{orderId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "order", "cancel", "{{orderId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": 2500,\n  \"quantity\": 10\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/order/modify/{{orderId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "order", "modify", "{{orderId}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Wishlist",
+			"item": [
+				{
+					"name": "Add to Wishlist",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/wishlist/favorites/256265",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "wishlist", "favorites", "256265"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Wishlist",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/wishlist/favorites",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "wishlist", "favorites"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete from Wishlist",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/wishlist/{{wishlistId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "wishlist", "{{wishlistId}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin Routes",
+			"item": [
+				{
+					"name": "Admin Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Admin\",\n  \"email\": \"admin@example.com\",\n  \"password\": \"admin123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Admin Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"admin123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Admin Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "logout"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/user",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "user"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Name\",\n  \"email\": \"updated@example.com\",\n  \"walletBalance\": 10000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/user/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "user", "{{userId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Wallet Details (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/wallet/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "wallet", "{{userId}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Data Export",
+			"item": [
+				{
+					"name": "Get CSV File",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/csv",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "csv"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://backend-dwca.onrender.com",
+			"type": "string"
+		},
+		{
+			"key": "userToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "adminToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "orderId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "wishlistId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

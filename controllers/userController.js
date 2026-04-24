@@ -1352,7 +1352,7 @@ module.exports = {
       const pipeline = await WalletTransaction.aggregate([
         {
           $match: {
-            user: req.user._id
+            user: req.user.id
           }
         },
         {
@@ -1380,7 +1380,7 @@ module.exports = {
       ])
 
       const walletBalance = pipeline?.[0]?.balance || 0
-      const transactions = await WalletTransaction.findWithSort({ user: req.user._id }, 'createdAt', 'desc');
+      const transactions = await WalletTransaction.findWithSort({ user: req.user.id }, 'createdAt', 'desc');
 
       return res.status(200).json(
         new ApiResponse(
