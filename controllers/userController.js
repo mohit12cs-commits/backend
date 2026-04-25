@@ -327,9 +327,9 @@ module.exports = {
             throw new ApiError(404,"User does not exists")
         }
 
-        // const checkPassword = await user.isPasswordCorrect(password);
+        const checkPassword = await user.isPasswordCorrect(password);
 
-        if(user.password !== password){
+        if(!checkPassword){
             throw new ApiError(401,"Invalid credentials")
         }
 
