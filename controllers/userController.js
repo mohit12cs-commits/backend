@@ -348,7 +348,7 @@ module.exports = {
 
     logout: asyncHandler(async(req, res)=>{
 
-        const user = await User.findByIdAndUpdate(req.user._id, { token: null })
+        const user = await User.findByIdAndUpdate(req.user.id, { token: null })
 
         return res.status(200).json(
             new ApiResponse(
@@ -536,7 +536,7 @@ module.exports = {
 
     addWishlist: asyncHandler(async(req, res)=>{
         const { instrument_token, wishlist_name } = req.params;
-        const userId = req.user._id;
+        const userId = req.user.id;
 
         if(!wishlist_name){
           throw new ApiError(400, "Please add wishlist name")
@@ -565,7 +565,7 @@ module.exports = {
     }),
     
     getWishlist: asyncHandler(async(req, res)=>{
-        const userId = req.user._id;
+        const userId = req.user.id;
         const wishlist_name = req.params.wishlist_name;
 
         if(!wishlist_name){
@@ -585,7 +585,7 @@ module.exports = {
     
     deleteWishlist: asyncHandler(async(req, res)=>{
 
-      const wishlistItem = await Wishlist.findOneAndDelete({ _id: req.params.id, user: req.user._id });
+      const wishlistItem = await Wishlist.findOneAndDelete({ _id: req.params.id, user: req.user.id });
   
       if (!wishlistItem){
         throw new Error("Item not found");
@@ -605,7 +605,7 @@ module.exports = {
       const { instrument_id, quantity, type, show_type } = req.body;
       let price = req.body.price;
 
-      const userId = req.user._id;
+      const userId = req.user.id;
 
       if(await isMarketOpen() === false){
         throw new ApiError(400, "Market is closed")
@@ -626,11 +626,11 @@ module.exports = {
       const endOfDayIST = moment().tz("Asia/Kolkata").endOf("day").toDate();
 
       const todayCount = await Trade.countDocuments({
-        user: req.user._id, createdAt: { $gte: startOfDayIST, $lt: endOfDayIST }, type: { $in: ["open", "close"] }
+        user: req.user.id, createdAt: { $gte: startOfDayIST, $lt: endOfDayIST }, type: { $in: ["open", "close"] }
       });
 
       const todayCount1 = await LimitOrder.countDocuments({
-        user: req.user._id, status: "pending", createdAt: { $gte: startOfDayIST, $lt: endOfDayIST }
+        user: req.user.id, status: "pending", createdAt: { $gte: startOfDayIST, $lt: endOfDayIST }
       });
 
       if(todayCount + todayCount1 >= trade_limit){
@@ -768,7 +768,7 @@ module.exports = {
 
       let price = req.body.price
 
-      const userId = req.user._id;
+      const userId = req.user.id;
 
       if(await isMarketOpen() === false){
         throw new ApiError(400, "Market is closed")
@@ -945,7 +945,7 @@ module.exports = {
 
       const { id } = req.params;
 
-      const limitOrder = await LimitOrder.findOneAndUpdate({ _id: id, user: req.user._id, status: "pending" }, { status: "cancel" })
+      const limitOrder = await LimitOrder.findOneAndUpdate({ _id: id, user: req.user.id, status: "pending" }, { status: "cancel" })
       // console.log(limitOrder, "limitOrder");
       
       if(limitOrder){
@@ -980,19 +980,19 @@ module.exports = {
         input.quantity = quantity;
       }
 
-      const findLimitOrder = await LimitOrder.findOne({ _id: id, user: req.user._id, status: "pending" })
+      const findLimitOrder = await LimitOrder.findOne({ _id: id, user: req.user.id, status: "pending" })
       if(!findLimitOrder){
         throw new ApiError(400, "Order Id is not valid");
       }
 
-      const user = await User.findById(req.user._id);
+      const user = await User.findById(req.user.id);
 
       const {ltp, findData} = await getLTP(findLimitOrder.instrument_id);
 
       const isOptionTrade = findData.instrument_type !== 'EQ'
 
       if(findLimitOrder.order_type === "stopLoss"){
-        const userTrades = await Trade.find({ user: req.user._id, instrument_id: findLimitOrder.instrument_id, type: "open" });
+        const userTrades = await Trade.find({ user: req.user.id, instrument_id: findLimitOrder.instrument_id, type: "open" });
         const totalOwned = userTrades.reduce((sum, trade) => sum + trade.quantity, 0);
         
         if (totalOwned < quantity) {
@@ -1009,7 +1009,7 @@ module.exports = {
         }
       }
       
-      const limitOrder = await LimitOrder.findOneAndUpdate({ _id: id, user: req.user._id, status: "pending" }, input)
+      const limitOrder = await LimitOrder.findOneAndUpdate({ _id: id, user: req.user.id, status: "pending" }, input)
       // console.log(limitOrder, "limitOrder");
       
       if(limitOrder){
@@ -1036,7 +1036,7 @@ module.exports = {
       const endOfDayIST = moment().tz("Asia/Kolkata").endOf("day").toDate();
 
       if(type === "open"){
-        const orders = await LimitOrder.findWithSort({ user: req.user._id, status: "pending" }, 'createdAt', 'desc');
+        const orders = await LimitOrder.findWithSort({ user: req.user.id, status: "pending" }, 'createdAt', 'desc');
 
         return res.status(200).json(
           new ApiResponse(
@@ -1047,7 +1047,7 @@ module.exports = {
         )
 
       }else if (type === "holding") {
-        const userTrades = await Trade.find({ user: req.user._id, type: "open", createdAt: { $lt: startOfDayIST } });
+        const userTrades = await Trade.find({ user: req.user.id, type: "open", createdAt: { $lt: startOfDayIST } });
 
         const portfolioMap = {};
         userTrades.forEach((trade) => {
@@ -1113,7 +1113,7 @@ module.exports = {
             )
           )
       }else if (type === "position"){
-        const userTrades = await Trade.find({ user: req.user._id, type: "open", createdAt: { $gte: startOfDayIST, $lt: endOfDayIST }  });
+        const userTrades = await Trade.find({ user: req.user.id, type: "open", createdAt: { $gte: startOfDayIST, $lt: endOfDayIST }  });
 
           const portfolioMap = {};
           userTrades.forEach((trade) => {
@@ -1181,7 +1181,7 @@ module.exports = {
             )
           )
       }else if (type === "executed"){
-        const userTrades = await Trade.find({ user: req.user._id, type: {$in: ["open", "close"]}, createdAt: { $gte: startOfDayIST, $lt: endOfDayIST } });
+        const userTrades = await Trade.find({ user: req.user.id, type: {$in: ["open", "close"]}, createdAt: { $gte: startOfDayIST, $lt: endOfDayIST } });
         // console.log(userTrades);
         
         const portfolioMap = {};
@@ -1262,10 +1262,10 @@ module.exports = {
 
         });
 
-        const openTrades = await LimitOrder.findWithSort({ user: req.user._id, status: { $in: ["cancel", "reject"] }, createdAt: { $gte: startOfDayIST, $lt: endOfDayIST } }, 'updatedAt', 'desc');
+        const openTrades = await LimitOrder.findWithSort({ user: req.user.id, status: { $in: ["cancel", "reject"] }, createdAt: { $gte: startOfDayIST, $lt: endOfDayIST } }, 'updatedAt', 'desc');
         // console.log(openTrades);
 
-        const userTradesSell = await Trade.find({ user: req.user._id, type: "sell", createdAt: { $gte: startOfDayIST, $lt: endOfDayIST } });
+        const userTradesSell = await Trade.find({ user: req.user.id, type: "sell", createdAt: { $gte: startOfDayIST, $lt: endOfDayIST } });
         const userTradesSell1 = userTradesSell.map((v)=>{
           return {
             _id: v._id,
@@ -1305,7 +1305,7 @@ module.exports = {
         throw new ApiError(400, "Invalid type")
       }
 
-        // const userTrades = await Trade.find({ user: req.user._id, type: "open" });
+        // const userTrades = await Trade.find({ user: req.user.id, type: "open" });
 
         // const portfolioMap = {};
 
