@@ -361,7 +361,7 @@ module.exports = {
     
     getSingleUser: asyncHandler(async(req, res)=>{
 
-      const findUser = await User.findById(req.user._id);
+      const findUser = await User.findById(req.user.id);
       
       if(findUser){
 
