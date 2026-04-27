@@ -489,17 +489,18 @@ module.exports = {
     }),
 
     searchData: asyncHandler(async(req, res)=>{
-      const { search, token } = req.query;
+      const { search, token, q } = req.query;
+      const searchTerm = search || q;
 
-      const searchWords = search.split(" ");
+      const searchWords = searchTerm ? searchTerm.split(" ") : [];
 
       let result = instrumentsData.filter((item) =>
-        search
-          ? 
-          // item.tradingsymbol.toLowerCase().includes(search.toLowerCase()) ||
-            // item.name.toLowerCase().includes(search.toLowerCase().replace(/\s/g, ""))
+        searchTerm
+          ?
+          // item.tradingsymbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            // item.name.toLowerCase().includes(searchTerm.toLowerCase().replace(/\s/g, ""))
           searchWords.every(word =>item.name.toLowerCase().includes(word.toLowerCase()) || item.tradingsymbol.toLowerCase().includes(word.toLowerCase())) ||
-          item.name.toLowerCase().includes(search.toLowerCase()) || item.tradingsymbol.includes(search.toLowerCase())
+          item.name.toLowerCase().includes(searchTerm.toLowerCase()) || item.tradingsymbol.includes(searchTerm.toLowerCase())
           : false
       );
 
