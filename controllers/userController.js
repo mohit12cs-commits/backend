@@ -586,15 +586,17 @@ module.exports = {
     
     deleteWishlist: asyncHandler(async(req, res)=>{
 
-      const wishlistItem = await Wishlist.findOneAndDelete({ _id: req.params.id, user: req.user.id });
-  
-      if (!wishlistItem){
-        throw new Error("Item not found");
+      const wishlistItem = await Wishlist.findById(req.params.id);
+
+      if (!wishlistItem || wishlistItem.user !== req.user.id){
+        throw new ApiError(404, "Item not found");
       }
-      
+
+      await Wishlist.getCollection().doc(req.params.id).delete();
+
       return res.status(200).json(
         new ApiResponse(
-            200, 
+            200,
             {},
             "Removed from wishlist"
         )
