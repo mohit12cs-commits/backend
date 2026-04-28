@@ -18,7 +18,7 @@ class WalletTransaction {
     }
 
     static getCollection() {
-        return db.collection('walletTransactions');
+        return db.collection('wallet_transactions');
     }
 
     static async create(data) {
@@ -62,11 +62,11 @@ class WalletTransaction {
 
     static async find(query = {}) {
         let queryRef = WalletTransaction.getCollection();
-        
+
         for (const [key, value] of Object.entries(query)) {
             queryRef = queryRef.where(key, '==', value);
         }
-        
+
         const snapshot = await queryRef.get();
         return snapshot.docs.map(doc => new WalletTransaction({ id: doc.id, ...doc.data() }));
     }
@@ -87,10 +87,10 @@ class WalletTransaction {
         // Firestore doesn't support aggregation pipelines like MongoDB
         // We need to implement this manually based on the pipeline
         const transactions = await WalletTransaction.find({});
-        
+
         // Simple aggregation implementation for wallet balance calculation
         const result = {};
-        
+
         transactions.forEach(transaction => {
             if (!result[transaction.user]) {
                 result[transaction.user] = {
@@ -99,14 +99,14 @@ class WalletTransaction {
                     totalDebit: 0
                 };
             }
-            
+
             if (transaction.type === 'credit') {
                 result[transaction.user].totalCredit += transaction.amount;
             } else if (transaction.type === 'debit') {
                 result[transaction.user].totalDebit += transaction.amount;
             }
         });
-        
+
         return Object.values(result).map(item => ({
             user: item._id,
             balance: item.totalCredit - item.totalDebit
