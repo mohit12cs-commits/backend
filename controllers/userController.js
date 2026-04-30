@@ -720,7 +720,7 @@ module.exports = {
         exchange: findData.exchange,
         name: findData.name,
         amount: totalCost,
-        trade_id: trade._id,
+        trade_id: trade.id,
         description: isOptionTrade ? `Buy ${quantity} lots of ${findData.name} at ${ltp}` : `Buy ${quantity} shares of ${findData.name} at ${ltp}`
       });
       await transaction.save();
@@ -961,7 +961,7 @@ module.exports = {
 
       const { id } = req.params;
 
-      const limitOrder = await LimitOrder.findOneAndUpdate({ _id: id, user: req.user.id, status: "pending" }, { status: "cancel" })
+      const limitOrder = await LimitOrder.findOneAndUpdate({ id: id, user: req.user.id, status: "pending" }, { status: "cancel" })
       // console.log(limitOrder, "limitOrder");
       
       if(limitOrder){
@@ -996,7 +996,7 @@ module.exports = {
         input.quantity = quantity;
       }
 
-      const findLimitOrder = await LimitOrder.findOne({ _id: id, user: req.user.id, status: "pending" })
+      const findLimitOrder = await LimitOrder.findOne({ id: id, user: req.user.id, status: "pending" })
       if(!findLimitOrder){
         throw new ApiError(400, "Order Id is not valid");
       }
@@ -1025,7 +1025,7 @@ module.exports = {
         }
       }
       
-      const limitOrder = await LimitOrder.findOneAndUpdate({ _id: id, user: req.user.id, status: "pending" }, input)
+      const limitOrder = await LimitOrder.findOneAndUpdate({ id: id, user: req.user.id, status: "pending" }, input)
       // console.log(limitOrder, "limitOrder");
       
       if(limitOrder){
