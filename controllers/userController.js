@@ -40,7 +40,7 @@ const {isMarketOpen, initialCheck} = require("../utils/checkMarketStatus");
 const apiKey = process.env.ZERODHA_API_KEY;
 const apiSecret = process.env.ZERODHA_API_SECRET;
 const KITE_API_URL = process.env.KITE_API_URL;
-let accessToken = '';
+let accessToken = process.env.ACCESS_TOKEN;
 
 
 function binarySearchInstruments(arr, target) {
@@ -76,17 +76,19 @@ const getAccessToken = async () => {
 
     let token = accessToken;
 
+    console.log("getAccessToken - accessToken variable:", token ? "exists" : "empty");
+
     if(!token){
         const data = await Token.findOne({});
+        console.log("getAccessToken - Token from DB:", data ? "found" : "not found");
         if(!data){
           return ""
         }
         return data.token;
     }
-    
-    return token
+    return token;
   } catch (error) {
-    console.error("Error fetching or parsing CSV:", error.message);
+    console.error("Error fetching access token:", error.message);
     return ""
   }
 };
@@ -407,12 +409,15 @@ module.exports = {
   
       if(response.data.status === 'success'){
         accessToken = response.data?.data?.access_token || "";
-        
-        await Token.findOneAndUpdate(
-          {}, 
-          { token: accessToken }, 
-          { new: true, upsert: true }
-        );
+
+        const existingToken = await Token.findOne({});
+        if (existingToken) {
+          existingToken.token = accessToken;
+          await existingToken.save();
+        } else {
+          await Token.create({ token: accessToken });
+        }
+
         reloadZerodaSockets()
         initialCheck();
       }
@@ -465,13 +470,17 @@ module.exports = {
       try {
         
    
-      const { instrumentToken, from, to, interval } = req.query;
+      const { instrumentToken, instrument_token, from, to, interval } = req.query;
+      const token = instrumentToken || instrument_token;
 
-      if (!instrumentToken || !from || !to) {
+      if (!token || !from || !to) {
           throw new ApiError(400, "Missing required parameters")
       }
 
-      const url = `${KITE_API_URL}/instruments/historical/${instrumentToken}/${interval || 'minute'}?from=${from}&to=${to}`;
+      const url = `${KITE_API_URL}/instruments/historical/${token}/${interval || 'minute'}?from=${from}&to=${to}`;
+
+      console.log("Historical data request URL:", url);
+      console.log("Instrument token:", token);
 
           const response = await axios.get(url, {
               headers: {
@@ -484,7 +493,8 @@ module.exports = {
           res.json(response.data);
 
         } catch (error) {
-            throw new ApiError(400,error.message || "Error fetching historical data")
+            console.log("Historical data error:", error.response?.data || error.message);
+            throw new ApiError(400,error.response?.data?.message || error.message || "Error fetching historical data")
         }
     }),
 
