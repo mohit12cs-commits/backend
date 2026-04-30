@@ -154,6 +154,44 @@ class Trade {
         const snapshot = await queryRef.get();
         return snapshot.docs.map(doc => new Trade({ id: doc.id, ...doc.data() }));
     }
+
+    static async aggregate(pipeline) {
+        const trades = await Trade.find({});
+        
+        let result = trades;
+        
+        for (const stage of pipeline) {
+            if (stage.$match) {
+                result = result.filter(trade => {
+                    for (const [key, value] of Object.entries(stage.$match)) {
+                        if (typeof value === 'object' && value.$in) {
+                            if (!value.$in.includes(trade[key])) return false;
+                        } else if (trade[key] !== value) {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+            }
+            
+            if (stage.$group) {
+                const grouped = {};
+                result.forEach(trade => {
+                    const groupKey = {};
+                    for (const [key, value] of Object.entries(stage.$group._id)) {
+                        groupKey[key] = trade[value.substring(1)];
+                    }
+                    const keyStr = JSON.stringify(groupKey);
+                    if (!grouped[keyStr]) {
+                        grouped[keyStr] = { _id: groupKey };
+                    }
+                });
+                result = Object.values(grouped);
+            }
+        }
+        
+        return result;
+    }
 }
 
 module.exports = Trade;

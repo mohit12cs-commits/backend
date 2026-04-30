@@ -40,7 +40,7 @@ const {isMarketOpen, initialCheck} = require("../utils/checkMarketStatus");
 const apiKey = process.env.ZERODHA_API_KEY;
 const apiSecret = process.env.ZERODHA_API_SECRET;
 const KITE_API_URL = process.env.KITE_API_URL;
-let accessToken = process.env.ACCESS_TOKEN;
+let accessToken;
 
 
 function binarySearchInstruments(arr, target) {
@@ -166,7 +166,10 @@ const fetchAndConvertCSV = async () => {
       csvData.sort((a, b) => a.instrument_token - b.instrument_token);
 
       fs.writeFileSync("instruments.json", JSON.stringify(csvData, null, 2));
-      // fs.writeFileSync("instruments.json", JSON.stringify(csvData, null, 2));
+      
+      // Reload instrumentsData in memory
+      instrumentsData = csvData;
+      console.log("✅ Instruments data updated successfully. Total instruments:", instrumentsData.length);
   
     } catch (error) {
       console.error("Error fetching or parsing CSV:", error.message);
@@ -235,7 +238,7 @@ const cronAtMarketClose = async() => {
         return;
     }
 
-    openShares.forEach(async (share) => {
+    for (const share of openShares) {
       const { userId, instrument_id } = share._id;
 
       const userTrades = await Trade.find({ user: userId, instrument_id, type: "open" });
@@ -278,7 +281,7 @@ const cronAtMarketClose = async() => {
       });
       await transaction.save();
 
-    })
+    }
  
 } catch (error) {
   console.log("Error at market status check",error);
