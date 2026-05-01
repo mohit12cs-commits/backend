@@ -430,13 +430,14 @@ module.exports = {
 
     fullMarketQuotes: asyncHandler(async(req, res)=>{
 
-      const { symbols } = req.query;
+      const { symbols, instrument_token } = req.query;
+      const instrumentTokens = symbols || instrument_token;
           
-      if (!symbols) {
-        return res.status(400).json({ error: "Symbols are required" });
+      if (!instrumentTokens) {
+        throw new ApiError(400, "Symbols or instrument_token are required");
       }
   
-      const instruments = symbols.split(",").map((s) => `i=${s}`).join("&");
+      const instruments = instrumentTokens.split(",").map((s) => `i=${s}`).join("&");
   
       const response = await axios.get(`${KITE_API_URL}/quote?${instruments}`, {
         headers: {
@@ -451,13 +452,14 @@ module.exports = {
 
     halfMarketQuotes: asyncHandler(async(req, res)=>{
 
-      const { symbols } = req.query;
+      const { symbols, instrument_token } = req.query;
+      const instrumentTokens = symbols || instrument_token;
           
-      if (!symbols) {
-        throw new ApiError(400, "Symbols are required")
+      if (!instrumentTokens) {
+        throw new ApiError(400, "Symbols or instrument_token are required")
       }
   
-      const instruments = symbols.split(",").map((s) => `i=${s}`).join("&");
+      const instruments = instrumentTokens.split(",").map((s) => `i=${s}`).join("&");
   
       const response = await axios.get(`${KITE_API_URL}/quote/ohlc?${instruments}`, {
         headers: {
