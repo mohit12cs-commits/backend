@@ -1101,7 +1101,7 @@ module.exports = {
     
                 current.quantity += trade.quantity;
                 current.createdAt = trade.createdAt;
-                current._id = trade._id;
+                current._id = trade.id;
               }else{
                 const current = portfolioMap[trade.instrument_id];
   
@@ -1113,7 +1113,7 @@ module.exports = {
                 current.total_lot_calculation += trade.quantity * trade.lot_size;
                 current.quantity += trade.quantity;
                 current.createdAt = trade.createdAt;
-                current._id = trade._id;
+                current._id = trade.id;
               }
             } else {
               // portfolioMap[trade.instrument_id].position += trade.quantity;
@@ -1169,7 +1169,7 @@ module.exports = {
     
                 current.quantity += trade.quantity;
                 current.createdAt = trade.createdAt;
-                current._id = trade._id;
+                current._id = trade.id;
               }else{
                 const current = portfolioMap[trade.instrument_id];
   
@@ -1181,7 +1181,7 @@ module.exports = {
                 current.total_lot = trade.lot_size;
                 current.quantity += trade.quantity;
                 current.createdAt = trade.createdAt;
-                current._id = trade._id;
+                current._id = trade.id;
               }
             } else {
               // portfolioMap[trade.instrument_id].position += trade.quantity;
@@ -1209,7 +1209,7 @@ module.exports = {
           const total1 = trade.sell_quantity || 0;
 
           return {
-            _id: trade._id,
+            _id: trade.id,
             instrument_id: trade.instrument_id,
             // position: 0,
             quantity: total + total1, 
@@ -1259,7 +1259,7 @@ module.exports = {
     
             //     current.quantity += trade.quantity;
             //     current.createdAt = trade.createdAt;
-            //     current._id = trade._id;
+            //     current._id = trade.id;
             //   }else{
             //     const current = portfolioMap[trade.instrument_id];
   
@@ -1271,7 +1271,7 @@ module.exports = {
             //     current.total_lot_calculation += trade.quantity * trade.lot_size;
             //     current.quantity += trade.quantity;
             //     current.createdAt = trade.createdAt;
-            //     current._id = trade._id;
+            //     current._id = trade.id;
             //   }
             // } else {
             //   // portfolioMap[trade.instrument_id].position += trade.quantity;
@@ -1286,7 +1286,7 @@ module.exports = {
         const userTradesSell = await Trade.find({ user: req.user.id, type: "sell", createdAt: { $gte: startOfDayIST, $lt: endOfDayIST } });
         const userTradesSell1 = userTradesSell.map((v)=>{
           return {
-            _id: v._id,
+            _id: v.id,
             instrument_id: v.instrument_id,
             quantity: v.quantity,
             status: "executed",
