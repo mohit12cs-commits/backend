@@ -86,7 +86,16 @@ class WalletTransaction {
     static async aggregate(pipeline) {
         // Firestore doesn't support aggregation pipelines like MongoDB
         // We need to implement this manually based on the pipeline
-        const transactions = await WalletTransaction.find({});
+        
+        let query = {};
+        
+        // Check for $match stage and extract the filter
+        const matchStage = pipeline.find(stage => stage.$match);
+        if (matchStage) {
+            query = matchStage.$match;
+        }
+        
+        const transactions = await WalletTransaction.find(query);
 
         // Simple aggregation implementation for wallet balance calculation
         const result = {};
