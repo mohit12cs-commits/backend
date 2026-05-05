@@ -624,8 +624,6 @@ module.exports = {
       let price = req.body.price;
 
       const userId = req.user.id;
-      console.log("Buy request - User ID:", userId);
-      console.log("Buy request - Body:", req.body);
 
       if(await isMarketOpen() === false){
         throw new ApiError(400, "Market is closed")
@@ -636,8 +634,6 @@ module.exports = {
       }
 
       const user = await User.findById(userId);
-      console.log("Buy request - User found:", !!user);
-      console.log("Buy request - User wallet balance:", user?.walletBalance);
       
       const trade_limit = user?.trade_limit || 3;
 
@@ -1058,18 +1054,7 @@ module.exports = {
 
       // Default to showing all open trades if no type specified
       if(!type || type === "all"){
-        console.log("Portfolio request - User ID:", req.user.id);
-        console.log("Portfolio request - Type:", type);
-        console.log("Portfolio request - req.user:", req.user);
-        
-        // First check if there are any trades at all
-        const allTrades = await Trade.find({});
-        console.log("Portfolio - Total trades in DB:", allTrades.length);
-        
-        // Then check trades for this user
         const userTrades = await Trade.find({ user: req.user.id, type: "open" });
-        console.log("Portfolio - Found trades for user:", userTrades.length);
-        console.log("Portfolio - User trades:", JSON.stringify(userTrades.map(t => ({ id: t.id, instrument_id: t.instrument_id, type: t.type, user: t.user }))));
 
         const portfolioMap = {};
         userTrades.forEach((trade) => {
@@ -1140,14 +1125,7 @@ module.exports = {
         )
 
       }else if (type === "holding") {
-        console.log("Portfolio (holding) - User ID:", req.user.id);
-        console.log("Portfolio (holding) - Start of day IST:", startOfDayIST);
-        
-        const allTrades = await Trade.find({ user: req.user.id, type: "open" });
-        console.log("Portfolio (holding) - All open trades for user:", allTrades.length);
-        
         const userTrades = await Trade.find({ user: req.user.id, type: "open", createdAt: { $lt: startOfDayIST } });
-        console.log("Portfolio (holding) - Trades before today:", userTrades.length);
 
         const portfolioMap = {};
         userTrades.forEach((trade) => {
