@@ -624,6 +624,8 @@ module.exports = {
       let price = req.body.price;
 
       const userId = req.user.id;
+      console.log("Buy request - User ID:", userId);
+      console.log("Buy request - Body:", req.body);
 
       if(await isMarketOpen() === false){
         throw new ApiError(400, "Market is closed")
@@ -634,7 +636,8 @@ module.exports = {
       }
 
       const user = await User.findById(userId);
-      // console.log(user, "user");
+      console.log("Buy request - User found:", !!user);
+      console.log("Buy request - User wallet balance:", user?.walletBalance);
       
       const trade_limit = user?.trade_limit || 3;
 
@@ -1053,7 +1056,79 @@ module.exports = {
       const startOfDayIST = moment().tz("Asia/Kolkata").startOf("day").toDate();
       const endOfDayIST = moment().tz("Asia/Kolkata").endOf("day").toDate();
 
-      if(type === "open"){
+      // Default to showing all open trades if no type specified
+      if(!type || type === "all"){
+        console.log("Portfolio request - User ID:", req.user.id);
+        console.log("Portfolio request - Type:", type);
+        console.log("Portfolio request - req.user:", req.user);
+        
+        // First check if there are any trades at all
+        const allTrades = await Trade.find({});
+        console.log("Portfolio - Total trades in DB:", allTrades.length);
+        
+        // Then check trades for this user
+        const userTrades = await Trade.find({ user: req.user.id, type: "open" });
+        console.log("Portfolio - Found trades for user:", userTrades.length);
+        console.log("Portfolio - User trades:", JSON.stringify(userTrades.map(t => ({ id: t.id, instrument_id: t.instrument_id, type: t.type, user: t.user }))));
+
+        const portfolioMap = {};
+        userTrades.forEach((trade) => {
+  
+            if (!portfolioMap[trade.instrument_id]) {
+  
+              portfolioMap[trade.instrument_id] = { 
+                instrument_id: trade.instrument_id,
+                quantity: 0, 
+                price: 0,
+                total_lot: 0, 
+                total_lot_calculation: 0,
+                tradingsymbol: trade.tradingsymbol || "",
+                name: trade.name || "",
+                exchange: trade.exchange || "",
+                instrument_type: trade.instrument_type || "",
+                buy_type: trade.buy_type || "",
+                createdAt: trade.createdAt || "",
+                show_type: trade.show_type,
+              };
+            }
+
+            if (trade.type === "open") {
+              if(trade.instrument_type === 'EQ') {
+                const current = portfolioMap[trade.instrument_id];
+  
+                current.price = 
+                  ((current.price * current.quantity + trade.price * trade.quantity) / 
+                  (current.quantity + trade.quantity)).toFixed(2);
+    
+                current.quantity += trade.quantity;
+                current.createdAt = trade.createdAt;
+                current._id = trade.id;
+              }else{
+                const current = portfolioMap[trade.instrument_id];
+  
+                current.price = 
+                  ((current.price * current.total_lot_calculation + trade.price * trade.quantity * trade.lot_size) / 
+                  (current.total_lot_calculation + trade.quantity * trade.lot_size)).toFixed(2);
+
+                current.total_lot = trade.lot_size;
+                current.total_lot_calculation += trade.quantity * trade.lot_size;
+                current.quantity += trade.quantity;
+                current.createdAt = trade.createdAt;
+                current._id = trade.id;
+              }
+            }
+          });
+
+          const portfolio = Object.values(portfolioMap);
+  
+          return res.status(200).json(
+            new ApiResponse(
+                200, 
+                portfolio,
+                ""
+            )
+          )
+      }else if(type === "open"){
         const orders = await LimitOrder.findWithSort({ user: req.user.id, status: "pending" }, 'createdAt', 'desc');
 
         return res.status(200).json(
@@ -1065,7 +1140,14 @@ module.exports = {
         )
 
       }else if (type === "holding") {
+        console.log("Portfolio (holding) - User ID:", req.user.id);
+        console.log("Portfolio (holding) - Start of day IST:", startOfDayIST);
+        
+        const allTrades = await Trade.find({ user: req.user.id, type: "open" });
+        console.log("Portfolio (holding) - All open trades for user:", allTrades.length);
+        
         const userTrades = await Trade.find({ user: req.user.id, type: "open", createdAt: { $lt: startOfDayIST } });
+        console.log("Portfolio (holding) - Trades before today:", userTrades.length);
 
         const portfolioMap = {};
         userTrades.forEach((trade) => {
