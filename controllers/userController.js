@@ -1125,7 +1125,7 @@ module.exports = {
         )
 
       }else if (type === "holding") {
-        const userTrades = await Trade.find({ user: req.user.id, type: "open", createdAt: { $lt: startOfDayIST } });
+        const userTrades = await Trade.find({ user: req.user.id, type: "open" });
 
         const portfolioMap = {};
         userTrades.forEach((trade) => {
